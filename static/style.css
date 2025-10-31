@@ -1,0 +1,226 @@
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #0e1626;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.container {
+  background-color: #1a2238;
+  padding: 30px;
+  border-radius: 12px;
+  width: 400px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+h1 {
+  font-size: 24px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #a0aec0;
+  margin-bottom: 25px;
+}
+
+.audio-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.upload-box, .record-box {
+  flex: 1;
+  margin: 0 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upload-box input[type="file"] {
+  display: none;
+}
+
+.upload-box label {
+  border: 2px dashed #3b4a6b;
+  padding: 20px 15px; /* Adjusted padding */
+  border-radius: 10px;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.3s;
+  display: flex; /* Use flexbox for content alignment */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 135px; /* Ensure consistent height */
+  box-sizing: border-box; /* Include padding in height calculation */
+}
+
+.upload-box label i { /* Icon styling */
+  font-size: 30px;
+  margin-bottom: 5px;
+  color: #667eea;
+}
+
+.upload-box label span { /* Text styling */
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.upload-box label .file-info { /* Small text styling */
+  font-size: 12px;
+  color: #a0aec0;
+  margin-top: 5px; /* Ensure it's inside and spaced */
+  text-align: center; /* Center the text */
+}
+
+.upload-box label:hover {
+  background-color: #2b3a57;
+}
+
+.record-box button {
+  padding: 20px;
+  width: 100%;
+  border-radius: 10px;
+  border: 2px solid #3b4a6b;
+  background-color: #2b3a57;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex; /* Use flexbox for content alignment */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 135px; /* Ensure consistent height */
+  box-sizing: border-box; /* Include padding in height calculation */
+}
+
+.record-box button i { /* Icon styling */
+  font-size: 30px;
+  margin-bottom: 5px;
+  color: #667eea;
+}
+
+.record-box button span { /* Text styling */
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.record-box button .file-info { /* Small text styling */
+  font-size: 12px;
+  color: #a0aec0;
+  margin-top: 5px; /* Ensure it's inside and spaced */
+  text-align: center; /* Center the text */
+}
+
+.record-box button:hover {
+  background-color: #3b4a6b;
+}
+
+#transcribeBtn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: opacity 0.3s;
+}
+
+#transcribeBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.result-box {
+  background-color: #0e1626;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.result-box h2 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.result-box pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: monospace;
+  margin: 0;
+}
+
+/* New styles for file display and audio preview */
+.file-display-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1a2238;
+  border: 1px solid #3b4a6b;
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  color: #fff;
+}
+
+.file-info-details {
+  display: flex;
+  align-items: center;
+}
+
+.file-info-details i {
+  font-size: 20px;
+  margin-right: 10px;
+  color: #667eea;
+}
+
+.file-info-details span {
+  font-size: 14px;
+  margin-right: 10px;
+  white-space: nowrap; /* Prevent file name from wrapping */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Add ellipsis if too long */
+  max-width: 150px; /* Limit width for file name */
+}
+
+.file-info-details small {
+  font-size: 12px;
+  color: #a0aec0;
+  white-space: nowrap;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #a0aec0;
+  cursor: pointer;
+  font-size: 18px;
+  transition: color 0.3s;
+  padding: 5px; /* Add padding for easier clicking */
+}
+
+.delete-btn:hover {
+  color: #b91c1c; /* Red for delete */
+}
+
+#audioPreview {
+  width: 100%;
+  margin-bottom: 20px;
+  background-color: #1a2238;
+  border-radius: 10px;
+  padding: 10px;
+  box-sizing: border-box; /* Include padding in width calculation */
+}

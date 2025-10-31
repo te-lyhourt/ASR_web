@@ -3,12 +3,20 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 import os
 import tempfile
-from model import transcribe
+from model import transcribe, load_model # Import the new load_model function
+from contextlib import asynccontextmanager
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    load_model()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 # Serve frontend
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 @app.get("/", response_class=HTMLResponse)
 def home():
