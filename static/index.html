@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Whisper Khmer ASR Tester</title>
+  <style>
+    body { font-family: Arial; margin: 40px; }
+    h1 { color: #2b6cb0; }
+    input, button { margin-top: 10px; }
+    button { padding: 8px 15px; border-radius: 6px; border: none; background: #2b6cb0; color: white; cursor: pointer; }
+    button:hover { background: #1a4d8f; }
+    .result { margin-top: 20px; font-weight: bold; white-space: pre-wrap; }
+    audio { margin-top: 10px; width: 100%; }
+  </style>
+</head>
+<body>
+  <h1>🎙️ Whisper Khmer ASR Tester</h1>
+  <p>Upload or record audio to transcribe:</p>
+
+  <input type="file" id="audio" accept="audio/*">
+  <br><br>
+
+  <button onclick="upload()">📤 Transcribe Uploaded Audio</button>
+  <button id="recordBtn" onclick="toggleRecording()">🔴 Start Recording</button>
+
+  <audio id="player" controls></audio>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    let mediaRecorder;
+    let audioChunks = [];
+    let isRecording = false;
+    let recordedBlob = null;
+
+    async function toggleRecording() {
+      const recordBtn = document.getElementById("recordBtn");
+
+      if (!isRecording) {
+        // Start recording
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+        mediaRecorder.onstop = () => {
+          recordedBlob = new Blob(audioChunks, { type: "audio/webm" });
+          const player = document.getElementById("player");
+          player.src = URL.createObjectURL(recordedBlob);
+        };
+
+        mediaRecorder.start();
+        isRecording = true;
+        recordBtn.textContent = "⏹️ Stop Recording";
+        recordBtn.style.background = "#b91c1c"; // red
+      } else {
+        // Stop recording
+        mediaRecorder.stop();
+        isRecording = false;
+        recordBtn.textContent = "🔴 Start Recording";
+        recordBtn.style.background = "#2b6cb0"; // blue
+      }
+    }
+
+    async function upload() {
+      const resultDiv = document.getElementById("result");
+      const fileInput = document.getElementById("audio");
+
+      let audioBlob = null;
+
+      if (fileInput.files.length > 0) {
+        audioBlob = fileInput.files[0];
+      } else if (recordedBlob) {
+        audioBlob = recordedBlob;
+      } else {
+        alert("Please record or upload an audio file first!");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", audioBlob, "recorded_audio.wav");
+
+      resultDiv.innerText = "⏳ Transcribing...";
+      const res = await fetch("/transcribe", { method: "POST", body: formData });
+      const data = await res.json();
+      resultDiv.innerText = data.text || data.error || "Error occurred.";
+    }
+  </script>
+</body>
+</html>
