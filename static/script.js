@@ -3,6 +3,7 @@ let audioChunks = [];
 let isRecording = false;
 let recordedBlob = null;
 let selectedFile = null; // To store the uploaded file
+let stream = null;
 
 const recordBtn = document.getElementById("recordBtn");
 const transcribeBtn = document.getElementById("transcribeBtn");
@@ -73,7 +74,7 @@ async function toggleRecording() {
     // Clear any previously uploaded file or recorded audio display
     clearAudioInfo();
 
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream);
     audioChunks = [];
 
@@ -82,6 +83,7 @@ async function toggleRecording() {
       recordedBlob = new Blob(audioChunks, { type: "audio/webm" });
       const blobUrl = URL.createObjectURL(recordedBlob);
       displayAudioInfo("recorded_audio.webm", recordedBlob.size, blobUrl);
+      stream.getTracks().forEach(t => t.stop());
     };
 
     mediaRecorder.start();
