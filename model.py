@@ -23,7 +23,7 @@ def load_model():
     model.eval()
     print(f"✅ Model loaded on {device}")
 
-def transcribe(audio_path: str):
+def transcribe(audio_path: str,chunk_length_s=60):
     # Ensure model is loaded before transcription (should be handled by startup event)
     if model is None or processor is None:
         raise RuntimeError("Model not loaded. Ensure load_model() is called on startup.")
@@ -33,10 +33,33 @@ def transcribe(audio_path: str):
     if sr != 16000:
         resampler = torchaudio.transforms.Resample(sr, 16000)
         speech = resampler(speech)
-    speech = speech.squeeze()
+    if speech.dim() > 1:
+        speech = speech.mean(dim=0)
+    # Calculate chunk size in samples
+    chunk_size_samples = chunk_length_s * sr
+    total_transcription = []
 
-    inputs = processor(speech, sampling_rate=16000, return_tensors="pt").input_features.to(device)
-    with torch.no_grad():
-        predicted_ids = model.generate(inputs)
-    transcription = processor.batch_decode(predicted_ids, skip_special_tokens=True)[0]
-    return transcription.strip()
+    for i in range(0, speech.shape[0], chunk_size_samples):
+        chunk = speech[i:i + chunk_size_samples]
+        
+        # Preprocess audio for Whisper
+        inputs = processor(
+            chunk,
+            sampling_rate=16000,
+            return_tensors="pt"
+        ).input_features
+        
+        inputs = inputs.to(device)
+        
+        # Generate transcription for the chunk
+        try:
+            with torch.no_grad():
+                predicted_ids = model.generate(inputs)
+            transcription = processor.batch_decode(predicted_ids, skip_special_tokens=True)[0]
+            total_transcription.append(transcription.strip())
+        except Exception as e:
+            print(f"An error occurred during transcription of a chunk: {e}")
+            # Optionally, append an empty string or a placeholder for failed chunks
+            total_transcription.append("")
+
+    return " ".join(total_transcription).strip()
