@@ -1,10 +1,11 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, WebSocket
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 import os
 import tempfile
-from model import transcribe, load_model # Import the new load_model function
+from model import transcribe, load_model,transcribe_stream # Import the new load_model function
 from contextlib import asynccontextmanager
+import numpy as np
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -38,3 +39,36 @@ async def transcribe_audio(file: UploadFile = File(...)):
         return JSONResponse({"error": str(e)}, status_code=500)
     finally:
         os.remove(tmp_path)
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+
+    # Sliding buffer: keep last 10 seconds of audio
+    SAMPLE_RATE = 16000
+    MAX_SECONDS = 10
+    buffer = np.array([], dtype=np.float32)
+
+    while True:
+        try:
+            # Receive raw PCM float32 audio bytes
+            chunk = await websocket.receive_bytes()
+        except:
+            break
+
+        # Convert received bytes → float32 array
+        audio_np = np.frombuffer(chunk, dtype=np.float32)
+
+        # Append to sliding buffer
+        buffer = np.concatenate([buffer, audio_np])
+
+        # Trim old audio
+        max_samples = SAMPLE_RATE * MAX_SECONDS
+        if len(buffer) > max_samples:
+            buffer = buffer[-max_samples:]
+
+        # Run real-time transcription
+        text = transcribe_stream(buffer)
+
+        # Send text back to client
+        await websocket.send_text(text)

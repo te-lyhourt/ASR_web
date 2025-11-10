@@ -21,16 +21,23 @@ const recordBox = document.querySelector(".record-box");
 
 recordBtn.addEventListener("click", toggleRecording);
 transcribeBtn.addEventListener("click", () => {
-    if (transcribeBtn.classList.contains("active")) {
-        // Reset button to default state
-        transcribeBtn.classList.remove("active");
-        transcribeBtn.innerHTML = '<span>Transcribe Audio</span>';
-    } else {
-        // Change button to active state
+    if (!realtimeSwitch.checked) {
+        upload(); // Normal mode
+        return;
+    }
+
+    // Realtime mode
+    if (!transcribeBtn.classList.contains("active")) {
         transcribeBtn.classList.add("active");
-        transcribeBtn.innerHTML = '<span>Stop Transcription Audio</span>';
+        transcribeBtn.innerHTML = '<span>Stop Real-Time</span>';
+        startRealtimeTranscription();
+    } else {
+        transcribeBtn.classList.remove("active");
+        transcribeBtn.innerHTML = '<span>Real Time Transcription Audio</span>';
+        stopRealtimeTranscription();
     }
 });
+
 fileInput.addEventListener("change", handleFileUpload);
 deleteFileBtn.addEventListener("click", deleteFile);
 
@@ -46,6 +53,7 @@ realtimeSwitch.addEventListener("change", () => {
         recordBox.style.display = "flex";
         transcribeBtn.innerHTML = '<span>Transcribe Audio</span>';
         transcribeBtn.classList.remove("active"); // Remove active class to reset background
+        stopRealtimeTranscription();
     }
 });
 
@@ -160,4 +168,54 @@ async function upload() {
     // Optionally clear the audio info after transcription if desired
     // clearAudioInfo();
   }
+}
+
+let ws = null;
+let audioContext = null;
+let processorNode = null;
+let sourceNode = null;
+
+
+async function startRealtimeTranscription() {
+    resultDiv.textContent = "🎙️ Listening...";
+
+    ws = new WebSocket(`ws://${window.location.host}/ws`);
+
+    ws.onmessage = (event) => {
+      resultDiv.textContent = event.data.trim();
+      console.log("New Text received:", event.data); // Log newText to browser console
+    };
+
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioContext = new AudioContext({ sampleRate: 16000 });
+    sourceNode = audioContext.createMediaStreamSource(stream);
+
+    // Buffer size 4096 gives ~0.25s per chunk; good for smooth streaming
+    processorNode = audioContext.createScriptProcessor(4096, 1, 1);
+
+    sourceNode.connect(processorNode);
+    processorNode.connect(audioContext.destination);
+
+    processorNode.onaudioprocess = (e) => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            const float32Data = e.inputBuffer.getChannelData(0);
+            ws.send(float32Data.buffer); // Send PCM chunk
+        }
+    };
+}
+
+function stopRealtimeTranscription() {
+    resultDiv.textContent = "⏹️ Stopped \n" + resultDiv.textContent;
+
+    if (processorNode) processorNode.disconnect();
+    if (sourceNode) sourceNode.disconnect();
+    if (audioContext) audioContext.close();
+    stream.getTracks().forEach(t => t.stop());
+
+    processorNode = null;
+    sourceNode = null;
+    audioContext = null;
+
+    if (ws) ws.close();
+    ws = null;
 }
