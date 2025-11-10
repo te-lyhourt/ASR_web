@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico">
   <title>Khmer Audio Transcription</title>
   <link rel="stylesheet" href="/static/style.css">
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
+
 <body>
   <div class="container">
     <h1>Khmer Audio Transcription</h1>
@@ -42,7 +45,20 @@
     </div>
     <audio id="audioPreview" controls style="display:none;"></audio>
 
-    <button id="transcribeBtn">Transcribe Audio</button>
+    <div class="switch-container">
+      <label class="switch">
+        <input type="checkbox">
+        <span class="slider round"></span>
+
+      </label>
+      <p class="switch-text">Real Time Transcrition</p>
+    </div>
+
+
+
+    <button id="transcribeBtn">
+      <span>Transcribe Audio</span>
+    </button>
 
     <div class="result-box">
       <h2>Transcription Result:</h2>
@@ -52,4 +68,5 @@
 
   <script src="/static/script.js"></script>
 </body>
+
 </html>

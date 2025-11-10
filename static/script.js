@@ -15,10 +15,39 @@ const fileNameSpan = document.getElementById("fileName");
 const fileSizeSmall = document.getElementById("fileSize");
 const deleteFileBtn = document.getElementById("deleteFileBtn");
 
+const realtimeSwitch = document.querySelector(".switch input");
+const uploadBox = document.querySelector(".upload-box");
+const recordBox = document.querySelector(".record-box");
+
 recordBtn.addEventListener("click", toggleRecording);
-transcribeBtn.addEventListener("click", upload);
+transcribeBtn.addEventListener("click", () => {
+    if (transcribeBtn.classList.contains("active")) {
+        // Reset button to default state
+        transcribeBtn.classList.remove("active");
+        transcribeBtn.innerHTML = '<span>Transcribe Audio</span>';
+    } else {
+        // Change button to active state
+        transcribeBtn.classList.add("active");
+        transcribeBtn.innerHTML = '<span>Stop Transcription Audio</span>';
+    }
+});
 fileInput.addEventListener("change", handleFileUpload);
 deleteFileBtn.addEventListener("click", deleteFile);
+
+realtimeSwitch.addEventListener("change", () => {
+    if (realtimeSwitch.checked) {
+        // Hide and disable the upload and record buttons
+        uploadBox.style.display = "none";
+        recordBox.style.display = "none";
+        transcribeBtn.innerHTML = '<span>Real Time Transcription Audio</span>';
+    } else {
+        // Show and enable the upload and record buttons
+        uploadBox.style.display = "flex";
+        recordBox.style.display = "flex";
+        transcribeBtn.innerHTML = '<span>Transcribe Audio</span>';
+        transcribeBtn.classList.remove("active"); // Remove active class to reset background
+    }
+});
 
 function formatBytes(bytes, decimals = 2) {
     if (bytes === 0) return '0 Bytes';
