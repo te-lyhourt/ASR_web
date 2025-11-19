@@ -15,47 +15,47 @@ const fileNameSpan = document.getElementById("fileName");
 const fileSizeSmall = document.getElementById("fileSize");
 const deleteFileBtn = document.getElementById("deleteFileBtn");
 
-const realtimeSwitch = document.querySelector(".switch input");
+// const realtimeSwitch = document.querySelector(".switch input");
 const uploadBox = document.querySelector(".upload-box");
 const recordBox = document.querySelector(".record-box");
 
 recordBtn.addEventListener("click", toggleRecording);
-transcribeBtn.addEventListener("click", () => {
-    if (!realtimeSwitch.checked) {
-        upload(); // Normal mode
-        return;
-    }
+// transcribeBtn.addEventListener("click", () => {
+//     if (!realtimeSwitch.checked) {
+//         upload(); // Normal mode
+//         return;
+//     }
 
-    // Realtime mode
-    if (!transcribeBtn.classList.contains("active")) {
-        transcribeBtn.classList.add("active");
-        transcribeBtn.innerHTML = '<span>Stop Real-Time</span>';
-        startRealtimeTranscription();
-    } else {
-        transcribeBtn.classList.remove("active");
-        transcribeBtn.innerHTML = '<span>Real Time Transcription Audio</span>';
-        stopRealtimeTranscription();
-    }
-});
+//     // Realtime mode
+//     if (!transcribeBtn.classList.contains("active")) {
+//         transcribeBtn.classList.add("active");
+//         transcribeBtn.innerHTML = '<span>Stop Real-Time</span>';
+//         startRealtimeTranscription();
+//     } else {
+//         transcribeBtn.classList.remove("active");
+//         transcribeBtn.innerHTML = '<span>Real Time Transcription Audio</span>';
+//         stopRealtimeTranscription();
+//     }
+// });
 
 fileInput.addEventListener("change", handleFileUpload);
 deleteFileBtn.addEventListener("click", deleteFile);
 
-realtimeSwitch.addEventListener("change", () => {
-    if (realtimeSwitch.checked) {
-        // Hide and disable the upload and record buttons
-        uploadBox.style.display = "none";
-        recordBox.style.display = "none";
-        transcribeBtn.innerHTML = '<span>Real Time Transcription Audio</span>';
-    } else {
-        // Show and enable the upload and record buttons
-        uploadBox.style.display = "flex";
-        recordBox.style.display = "flex";
-        transcribeBtn.innerHTML = '<span>Transcribe Audio</span>';
-        transcribeBtn.classList.remove("active"); // Remove active class to reset background
-        stopRealtimeTranscription();
-    }
-});
+// realtimeSwitch.addEventListener("change", () => {
+//     if (realtimeSwitch.checked) {
+//         // Hide and disable the upload and record buttons
+//         uploadBox.style.display = "none";
+//         recordBox.style.display = "none";
+//         transcribeBtn.innerHTML = '<span>Real Time Transcription Audio</span>';
+//     } else {
+//         // Show and enable the upload and record buttons
+//         uploadBox.style.display = "flex";
+//         recordBox.style.display = "flex";
+//         transcribeBtn.innerHTML = '<span>Transcribe Audio</span>';
+//         transcribeBtn.classList.remove("active"); // Remove active class to reset background
+//         stopRealtimeTranscription();
+//     }
+// });
 
 function formatBytes(bytes, decimals = 2) {
     if (bytes === 0) return '0 Bytes';
@@ -170,52 +170,52 @@ async function upload() {
   }
 }
 
-let ws = null;
-let audioContext = null;
-let processorNode = null;
-let sourceNode = null;
+// let ws = null;
+// let audioContext = null;
+// let processorNode = null;
+// let sourceNode = null;
 
 
-async function startRealtimeTranscription() {
-    resultDiv.textContent = "🎙️ Listening...";
+// async function startRealtimeTranscription() {
+//     resultDiv.textContent = "🎙️ Listening...";
 
-    ws = new WebSocket(`ws://${window.location.host}/ws`);
+//     ws = new WebSocket(`ws://${window.location.host}/ws`);
 
-    ws.onmessage = (event) => {
-      resultDiv.textContent = event.data.trim();
-      console.log("New Text received:", event.data); // Log newText to browser console
-    };
+//     ws.onmessage = (event) => {
+//       resultDiv.textContent = event.data.trim();
+//       console.log("New Text received:", event.data); // Log newText to browser console
+//     };
 
-    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    audioContext = new AudioContext({ sampleRate: 16000 });
-    sourceNode = audioContext.createMediaStreamSource(stream);
+//     stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+//     audioContext = new AudioContext({ sampleRate: 16000 });
+//     sourceNode = audioContext.createMediaStreamSource(stream);
 
-    // Buffer size 4096 gives ~0.25s per chunk; good for smooth streaming
-    processorNode = audioContext.createScriptProcessor(4096, 1, 1);
+//     // Buffer size 4096 gives ~0.25s per chunk; good for smooth streaming
+//     processorNode = audioContext.createScriptProcessor(4096, 1, 1);
 
-    sourceNode.connect(processorNode);
-    processorNode.connect(audioContext.destination);
+//     sourceNode.connect(processorNode);
+//     processorNode.connect(audioContext.destination);
 
-    processorNode.onaudioprocess = (e) => {
-        if (ws && ws.readyState === WebSocket.OPEN) {
-            const float32Data = e.inputBuffer.getChannelData(0);
-            ws.send(float32Data.buffer); // Send PCM chunk
-        }
-    };
-}
+//     processorNode.onaudioprocess = (e) => {
+//         if (ws && ws.readyState === WebSocket.OPEN) {
+//             const float32Data = e.inputBuffer.getChannelData(0);
+//             ws.send(float32Data.buffer); // Send PCM chunk
+//         }
+//     };
+// }
 
-function stopRealtimeTranscription() {
-    resultDiv.textContent = "⏹️ Stopped \n" + resultDiv.textContent;
+// function stopRealtimeTranscription() {
+//     resultDiv.textContent = "⏹️ Stopped \n" + resultDiv.textContent;
 
-    if (processorNode) processorNode.disconnect();
-    if (sourceNode) sourceNode.disconnect();
-    if (audioContext) audioContext.close();
-    stream.getTracks().forEach(t => t.stop());
+//     if (processorNode) processorNode.disconnect();
+//     if (sourceNode) sourceNode.disconnect();
+//     if (audioContext) audioContext.close();
+//     stream.getTracks().forEach(t => t.stop());
 
-    processorNode = null;
-    sourceNode = null;
-    audioContext = null;
+//     processorNode = null;
+//     sourceNode = null;
+//     audioContext = null;
 
-    if (ws) ws.close();
-    ws = null;
-}
+//     if (ws) ws.close();
+//     ws = null;
+// }
