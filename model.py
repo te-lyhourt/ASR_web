@@ -2,8 +2,8 @@ import torch
 import torchaudio
 from transformers import WhisperProcessor, WhisperForConditionalGeneration
 
-MODEL_NAME = "PhanithLIM/whisper-small-khmer"
-CACHE_DIR = "../models/whisper-small-khmer"
+MODEL_NAME = "Lyhourtlyhourt/whisper-openai-small-kh"
+CACHE_DIR = "../models/whisper-small-kh-ft"
 
 # Initialize these as None, they will be loaded on startup
 processor = None

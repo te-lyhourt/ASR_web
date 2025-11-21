@@ -20,23 +20,26 @@ const uploadBox = document.querySelector(".upload-box");
 const recordBox = document.querySelector(".record-box");
 
 recordBtn.addEventListener("click", toggleRecording);
-// transcribeBtn.addEventListener("click", () => {
-//     if (!realtimeSwitch.checked) {
-//         upload(); // Normal mode
-//         return;
-//     }
+transcribeBtn.addEventListener("click", () => {
+  transcribeBtn.innerHTML = '<span>Transcribing...</span>';
+  transcribeBtn.classList.add("active");
 
-//     // Realtime mode
-//     if (!transcribeBtn.classList.contains("active")) {
-//         transcribeBtn.classList.add("active");
-//         transcribeBtn.innerHTML = '<span>Stop Real-Time</span>';
-//         startRealtimeTranscription();
-//     } else {
-//         transcribeBtn.classList.remove("active");
-//         transcribeBtn.innerHTML = '<span>Real Time Transcription Audio</span>';
-//         stopRealtimeTranscription();
-//     }
-// });
+    // if (!realtimeSwitch.checked) {
+        upload(); // Normal mode
+        return;
+    // }
+
+    // // Realtime mode
+    // if (!transcribeBtn.classList.contains("active")) {
+    //     transcribeBtn.classList.add("active");
+    //     transcribeBtn.innerHTML = '<span>Stop Real-Time</span>';
+    //     startRealtimeTranscription();
+    // } else {
+    //     transcribeBtn.classList.remove("active");
+    //     transcribeBtn.innerHTML = '<span>Real Time Transcription Audio</span>';
+    //     stopRealtimeTranscription();
+    // }
+});
 
 fileInput.addEventListener("change", handleFileUpload);
 deleteFileBtn.addEventListener("click", deleteFile);
@@ -86,6 +89,7 @@ function clearAudioInfo() {
 }
 
 function handleFileUpload() {
+
     if (fileInput.files.length > 0) {
         selectedFile = fileInput.files[0];
         recordedBlob = null; // Clear recorded blob if a file is uploaded
@@ -160,13 +164,16 @@ async function upload() {
     const res = await fetch("/transcribe", { method: "POST", body: formData });
     const data = await res.json();
     resultDiv.textContent = data.text || data.error || "Error occurred.";
+    
+
   } catch (err) {
     resultDiv.textContent = "Error occurred during transcription.";
     console.error(err);
   } finally {
     transcribeBtn.disabled = false; // Re-enable button
-    // Optionally clear the audio info after transcription if desired
-    // clearAudioInfo();
+    transcribeBtn.innerHTML = '<span>Transcribe Audio</span>';
+    transcribeBtn.classList.remove("active");
+    clearAudioInfo();
   }
 }
 
