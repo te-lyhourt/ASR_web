@@ -2,7 +2,7 @@ import torch
 import torchaudio
 from transformers import WhisperProcessor, WhisperForConditionalGeneration
 
-MODEL_NAME = "Lyhourtlyhourt/whisper-openai-small-kh"
+MODEL_NAME = "lyhourt/whisper-small-kh-ft"
 CACHE_DIR = "../models/whisper-small-kh-ft"
 
 # Initialize these as None, they will be loaded on startup
