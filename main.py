@@ -18,10 +18,15 @@ app = FastAPI(lifespan=lifespan)
 # Serve frontend
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-
+# home page
 @app.get("/", response_class=HTMLResponse)
 def home():
     with open("static/index.html", "r", encoding="utf-8") as f:
+        return f.read()
+
+@app.get("/subtitle", response_class=HTMLResponse)
+def subtitle():
+    with open("static/subtitle.html", "r", encoding="utf-8") as f:
         return f.read()
 
 @app.post("/transcribe")
