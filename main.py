@@ -36,7 +36,6 @@ async def transcribe_audio(file: UploadFile = File(...)):
     with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
         tmp.write(await file.read())
         tmp_path = tmp.name
-
     try:
         text = transcribe(tmp_path)
         return JSONResponse({"text": text})
@@ -45,35 +44,35 @@ async def transcribe_audio(file: UploadFile = File(...)):
     finally:
         os.remove(tmp_path)
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
+# @app.websocket("/ws")
+# async def websocket_endpoint(websocket: WebSocket):
+#     await websocket.accept()
 
-    # Sliding buffer: keep last 10 seconds of audio
-    SAMPLE_RATE = 16000
-    MAX_SECONDS = 10
-    buffer = np.array([], dtype=np.float32)
+#     # Sliding buffer: keep last 10 seconds of audio
+#     SAMPLE_RATE = 16000
+#     MAX_SECONDS = 10
+#     buffer = np.array([], dtype=np.float32)
 
-    while True:
-        try:
-            # Receive raw PCM float32 audio bytes
-            chunk = await websocket.receive_bytes()
-        except:
-            break
+#     while True:
+#         try:
+#             # Receive raw PCM float32 audio bytes
+#             chunk = await websocket.receive_bytes()
+#         except:
+#             break
 
-        # Convert received bytes → float32 array
-        audio_np = np.frombuffer(chunk, dtype=np.float32)
+#         # Convert received bytes → float32 array
+#         audio_np = np.frombuffer(chunk, dtype=np.float32)
 
-        # Append to sliding buffer
-        buffer = np.concatenate([buffer, audio_np])
+#         # Append to sliding buffer
+#         buffer = np.concatenate([buffer, audio_np])
 
-        # Trim old audio
-        max_samples = SAMPLE_RATE * MAX_SECONDS
-        if len(buffer) > max_samples:
-            buffer = buffer[-max_samples:]
+#         # Trim old audio
+#         max_samples = SAMPLE_RATE * MAX_SECONDS
+#         if len(buffer) > max_samples:
+#             buffer = buffer[-max_samples:]
 
-        # Run real-time transcription
-        text = transcribe_stream(buffer)
+#         # Run real-time transcription
+#         text = transcribe_stream(buffer)
 
-        # Send text back to client
-        await websocket.send_text(text)
+#         # Send text back to client
+#         await websocket.send_text(text)

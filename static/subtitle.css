@@ -1,0 +1,15 @@
+.subtitle {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 48px;
+    font-weight: bold;
+    color: white;
+    -webkit-text-stroke: 1px black;
+    background-color: rgb(0, 0, 0, 0.7);
+    text-align: center;
+}
+
+.subtitle-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
